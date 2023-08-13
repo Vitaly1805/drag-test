@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+        .table {
+            display: flex;
+            justify-content: space-between;
+            background: aliceblue;
+            padding: 50px;
+        }
+
+        .column {
+            background: bisque;
+            width: 200px;
+            height: 200px;
+        }
+
+        .column_hover {
+            background: darkkhaki;
+        }
+
+        .cell {
+            background: cadetblue;
+            width: 200px;
+            height: 100px;
+            cursor: pointer;
+            position: absolute;
+        }
+
+        .table,
+        .column,
+        .cell {
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body style="height: 200vh">
+
+
+<div class="table">
+    <div class="column droppable">
+        <div class="cell"></div>
+    </div>
+    <div class="column droppable"></div>
+    <div class="column droppable"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
