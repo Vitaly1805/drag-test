@@ -11,7 +11,7 @@
         .table {
             display: flex;
             justify-content: space-between;
-            background: aliceblue;
+            background: #c3dff5;
             padding: 50px;
             grid-gap: 20px;
         }
@@ -38,7 +38,6 @@
             width: 200px;
             height: 100px;
             cursor: pointer;
-            position: absolute;
         }
 
         .table,
@@ -77,17 +76,17 @@
 <body style="height: 200vh">
 
 <div class="table">
-    <div class="column droppable">
-        <div class="cell"></div>
+    <div class="column droppable" data-column="0">
+        <div class="cell" hidden></div>
     </div>
-    <div class="column droppable"></div>
-    <div class="column droppable"></div>
+    <div class="column droppable" data-column="1"></div>
+    <div class="column droppable" data-column="2"></div>
 </div>
 
 <div class="drag-file">
     <div class="drag-file__zone">
         <div class="drag-file__title">
-            Please drop to me
+            Please drop me file
         </div>
     </div>
 

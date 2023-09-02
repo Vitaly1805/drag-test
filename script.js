@@ -1,39 +1,38 @@
-const cell = document.querySelector('.cell')
+const $cell = document.querySelector('.cell')
 let isDraggable = false
 let cellOffsetY = 0
 let cellOffsetX = 0
-let currentTop = localStorage.getItem('currentTop') ?? 0
-let currentLeft = localStorage.getItem('currentLeft') ?? 0
-let currentColumn
+let currentTop = 0
+let currentLeft = 0
+let $currentColumn
+let currentColumnId = localStorage.getItem('currentColumnId')
 
 document.addEventListener('DOMContentLoaded', () => {
-    if(!isDragCoords()) {
-        const column = cell.closest('.column')
-        currentTop = column.pageY
-        currentLeft = column.pageX
+    if(!!currentColumnId) {
+        $currentColumn = document.querySelectorAll('.column') [currentColumnId]
+        $currentColumn.append($cell)
     }
 
-    cell.style.top = `${currentTop}px`
-    cell.style.left = `${currentLeft}px`
+    $cell.hidden = false
 })
 
-cell.addEventListener('mousedown', dragStart)
-cell.addEventListener('touchstart', (event) => {
+$cell.addEventListener('mousedown', dragStart)
+$cell.addEventListener('touchstart', (event) => {
     prepareTouchToMouse(event)
     dragStart(event)
 })
 
 document.addEventListener('mousemove', dragMove)
-cell.addEventListener('touchmove', (event) => {
+$cell.addEventListener('touchmove', (event) => {
     prepareTouchToMouse(event)
     dragMove(event)
 })
 
-cell.addEventListener('mouseup', dragEnd)
-cell.addEventListener('touchend', dragEnd)
+$cell.addEventListener('mouseup', dragEnd)
+$cell.addEventListener('touchend', dragEnd)
 
 window.addEventListener('resize', () => {
-    if(currentColumn) {
+    if($currentColumn) {
         moveCellToColumn()
     }
 })
@@ -41,12 +40,13 @@ window.addEventListener('resize', () => {
 function dragStart(event) {
     cellOffsetY = event.offsetY
     cellOffsetX = event.offsetX
+    $cell.style.position = 'absolute'
     isDraggable = true
 }
 
 function dragMove(event) {
     event.preventDefault()
-    
+
     if(isDraggable) {
         moveAt(event.pageX - cellOffsetX, event.pageY - cellOffsetY)
         resetColumnHover()
@@ -62,18 +62,19 @@ function dragMove(event) {
 function dragEnd() {
     isDraggable = false
 
-    if(currentColumn) {
+    if($currentColumn) {
         moveCellToColumn()
     }
 
-    currentColumn.classList.remove('column_hover')
+    $cell.style.position = 'static'
+    $currentColumn.classList.remove('column_hover')
 }
 
 function moveAt(pageX, pageY) {
     currentTop = pageY
     currentLeft = pageX
-    cell.style.top = `${currentTop}px`
-    cell.style.left = `${currentLeft}px`
+    $cell.style.top = `${currentTop}px`
+    $cell.style.left = `${currentLeft}px`
 }
 
 function isColumnRelative(element) {
@@ -82,31 +83,30 @@ function isColumnRelative(element) {
 
 function setColumnHover(column) {
     if(!!column) {
-        currentColumn = column
-        currentColumn.classList.add('column_hover')
+        localStorage.setItem('currentColumnId', column.dataset.column)
+        $currentColumn = column
+        $currentColumn.classList.add('column_hover')
     }
 }
 
 function getElementFromPoint(pageX, pageY) {
-    cell.hidden = true
+    $cell.hidden = true
     const elementFromPoint = document.elementFromPoint(pageX, pageY)
-    cell.hidden = false
+    $cell.hidden = false
 
     return elementFromPoint
 }
 
 function resetColumnHover() {
-    if(currentColumn) {
-        currentColumn.classList.remove('column_hover')
+    if($currentColumn) {
+        $currentColumn.classList.remove('column_hover')
     }
 }
 
 function moveCellToColumn() {
-    currentColumn.append(cell)
-    const coords = currentColumn.getBoundingClientRect()
+    $currentColumn.append($cell)
+    const coords = $currentColumn.getBoundingClientRect()
     moveAt(coords.left, coords.top)
-    localStorage.setItem('currentTop', currentTop)
-    localStorage.setItem('currentLeft', currentLeft)
 }
 
 function prepareTouchToMouse(event) {
@@ -118,9 +118,4 @@ function prepareTouchToMouse(event) {
 
     event.pageX = touch.pageX
     event.pageY = touch.pageY
-}
-
-
-function isDragCoords() {
-    return !!currentTop && !!currentLeft
 }
