@@ -46,10 +46,35 @@
         .cell {
             border-radius: 4px;
         }
+
+        .drag-file {
+            background: #f19797;
+            padding: 20px;
+        }
+
+        .drag-file__zone {
+            width: 400px;
+            height: 400px;
+            background: #cdcdcd;
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-file__zone_hover {
+            border: 3px dashed #000;
+        }
+
+        .drag-file__title {
+            font-size: 30px;
+            font-family: "Baskerville Old Face", serif;
+        }
+
     </style>
 </head>
 <body style="height: 200vh">
-
 
 <div class="table">
     <div class="column droppable">
@@ -59,6 +84,17 @@
     <div class="column droppable"></div>
 </div>
 
+<div class="drag-file">
+    <div class="drag-file__zone">
+        <div class="drag-file__title">
+            Please drop to me
+        </div>
+    </div>
+
+    <ul class="drag-file__list"></ul>
+</div>
+
 <script src="script.js"></script>
+<script src="file.js"></script>
 </body>
 </html>
