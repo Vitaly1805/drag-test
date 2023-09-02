@@ -2,22 +2,51 @@ const cell = document.querySelector('.cell')
 let isDraggable = false
 let cellOffsetY = 0
 let cellOffsetX = 0
-let currentTop = 0
-let currentLeft = 0
+let currentTop = localStorage.getItem('currentTop') ?? 0
+let currentLeft = localStorage.getItem('currentLeft') ?? 0
 let currentColumn
 
 document.addEventListener('DOMContentLoaded', () => {
-    cell.style.top = `${localStorage.getItem('currentTop')}px`
-    cell.style.left = `${localStorage.getItem('currentLeft')}px`
+    if(!isDragCoords()) {
+        const column = cell.closest('.column')
+        currentTop = column.pageY
+        currentLeft = column.pageX
+    }
+
+    cell.style.top = `${currentTop}px`
+    cell.style.left = `${currentLeft}px`
 })
 
-cell.addEventListener('mousedown', (event) => {
+cell.addEventListener('mousedown', dragStart)
+cell.addEventListener('touchstart', (event) => {
+    prepareTouchToMouse(event)
+    dragStart(event)
+})
+
+document.addEventListener('mousemove', dragMove)
+cell.addEventListener('touchmove', (event) => {
+    prepareTouchToMouse(event)
+    dragMove(event)
+})
+
+cell.addEventListener('mouseup', dragEnd)
+cell.addEventListener('touchend', dragEnd)
+
+window.addEventListener('resize', () => {
+    if(currentColumn) {
+        moveCellToColumn()
+    }
+})
+
+function dragStart(event) {
     cellOffsetY = event.offsetY
     cellOffsetX = event.offsetX
     isDraggable = true
-})
+}
 
-document.addEventListener('mousemove', (event) => {
+function dragMove(event) {
+    event.preventDefault()
+    
     if(isDraggable) {
         moveAt(event.pageX - cellOffsetX, event.pageY - cellOffsetY)
         resetColumnHover()
@@ -28,18 +57,17 @@ document.addEventListener('mousemove', (event) => {
             setColumnHover(elementFromPoint)
         }
     }
-})
+}
 
-cell.addEventListener('mouseup', (event) => {
+function dragEnd() {
     isDraggable = false
 
     if(currentColumn) {
         moveCellToColumn()
     }
 
-    localStorage.setItem('currentTop', currentTop)
-    localStorage.setItem('currentLeft', currentLeft)
-})
+    currentColumn.classList.remove('column_hover')
+}
 
 function moveAt(pageX, pageY) {
     currentTop = pageY
@@ -53,8 +81,10 @@ function isColumnRelative(element) {
 }
 
 function setColumnHover(column) {
-    currentColumn = column
-    currentColumn.classList.add('column_hover')
+    if(!!column) {
+        currentColumn = column
+        currentColumn.classList.add('column_hover')
+    }
 }
 
 function getElementFromPoint(pageX, pageY) {
@@ -72,6 +102,25 @@ function resetColumnHover() {
 }
 
 function moveCellToColumn() {
+    currentColumn.append(cell)
     const coords = currentColumn.getBoundingClientRect()
     moveAt(coords.left, coords.top)
+    localStorage.setItem('currentTop', currentTop)
+    localStorage.setItem('currentLeft', currentLeft)
+}
+
+function prepareTouchToMouse(event) {
+    const touch = event.targetTouches[0]
+    const target = event.target
+
+    event.offsetX = touch.pageX - target.offsetLeft
+    event.offsetY = touch.pageY - target.offsetTop
+
+    event.pageX = touch.pageX
+    event.pageY = touch.pageY
+}
+
+
+function isDragCoords() {
+    return !!currentTop && !!currentLeft
 }
